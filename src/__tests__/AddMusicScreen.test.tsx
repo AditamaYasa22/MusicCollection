@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import AddMusicScreen from '../screens/AddMusicScreen'; // Pastikan path sesuai
-import { createMusic } from '../services/api';
+import { createMusic } from '../api/api';
 import { NavigationContainer } from '@react-navigation/native';
 
 // Mock fungsi `createMusic`
-jest.mock('../services/api', () => ({
+jest.mock('../api/api', () => ({
   createMusic: jest.fn(),
 }));
 

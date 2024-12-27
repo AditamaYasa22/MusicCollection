@@ -1,12 +1,12 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import EditMusicScreen from '../screens/EditMusicScreen';
-import { getMusicById, updateMusic } from '../services/api';
+import { getMusicById, updateMusic } from '../api/api';
 import { NavigationContainer } from '@react-navigation/native';
 import { Alert } from 'react-native';
 
 // Mock fungsi API
-jest.mock('../services/api', () => ({
+jest.mock('../api/api', () => ({
   getMusicById: jest.fn(),
   updateMusic: jest.fn(),
 }));

@@ -6,8 +6,8 @@ import EditMusicScreen from '../screens/EditMusicScreen';
 
 export type HomeStackParamList = {
   MusicCollection: undefined;
-  DetailMusic: { id: string };
-  EditMusic: { id: string };
+  DetailMusic: { id: number };
+  EditMusic: { id: number };
 };
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();

@@ -30,7 +30,7 @@ export const getMusics = async (): Promise<Music[]> => {
   }
 };
 
-export const getMusicById = async (id: string): Promise<Music> => {
+export const getMusicById = async (id: number): Promise<Music> => {
   try {
     const response = await API.get<Music>(`/${id}`);
     return response.data;
@@ -50,7 +50,7 @@ export const createMusic = async (data: Omit<Music, 'id'>): Promise<Music> => {
   }
 };
 
-export const updateMusic = async (id: string, data: Partial<Music>): Promise<Music> => {
+export const updateMusic = async (id: number, data: Partial<Music>): Promise<Music> => {
   try {
     const response = await API.put<Music>(`/${id}`, data);
     return response.data;
@@ -60,7 +60,7 @@ export const updateMusic = async (id: string, data: Partial<Music>): Promise<Mus
   }
 };
 
-export const deleteMusic = async (id: string): Promise<void> => {
+export const deleteMusic = async (id: number): Promise<void> => {
   try {
     await API.delete<void>(`/${id}`);
   } catch (error) {

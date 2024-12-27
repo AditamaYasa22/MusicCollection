@@ -1,11 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import { View, Text, Button, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
-import { getMusicById, deleteMusic } from '../services/api';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Music } from '../types/music';
 import { RouteProp } from '@react-navigation/native';
-import { RootStackParamList } from '../navigation/types'; 
+import { RootStackParamList } from '../navigation/types';
+import { useDataService } from '../services/DataServices'; // Menggunakan abstraksi data
+import { getMusicByIdSQLite, deleteMusicSQLite } from '../database/sqlite';
+import * as Animatable from 'react-native-animatable';
 
 type DetailMusicScreenRouteProp = RouteProp<RootStackParamList, 'DetailMusic'>;
 type DetailMusicScreenNavigationProp = NativeStackNavigationProp<
@@ -22,20 +24,20 @@ const DetailMusic = () => {
   const navigation = useNavigation<DetailMusicScreenNavigationProp>();
   const { id } = route.params;
 
+  const { getMusicById, removeMusic } = useDataService(); // Abstraksi sumber data
+
   useFocusEffect(
     useCallback(() => {
       fetchMusicDetail();
     }, [])
   );
 
-  
-
   const fetchMusicDetail = async () => {
     setLoading(true);
     setError(null);
     try {
-      const musicData = await getMusicById(id); 
-      setMusic(musicData); 
+      const musicData = await getMusicByIdSQLite(Number(id)); // Mengambil data dari data service
+      setMusic(musicData);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch music details');
       console.error('Error fetching music detail:', err);
@@ -55,9 +57,9 @@ const DetailMusic = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteMusic(id); 
+              await deleteMusicSQLite(Number(id)); // Menghapus data melalui data service
               Alert.alert('Success', 'Music deleted successfully');
-              navigation.goBack(); 
+              navigation.goBack();
             } catch (err: any) {
               Alert.alert('Error', err.message || 'Failed to delete music');
               console.error('Error deleting music:', err);
@@ -88,23 +90,51 @@ const DetailMusic = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <Animatable.View
+      animation="fadeInUp"
+      duration={800}
+      style={styles.container}
+    >
       {music ? (
         <>
-          <Text style={styles.title}>{music.title}</Text>
-          <Text>Artist: {music.artist}</Text>
-          <Text>Genre: {music.genre}</Text>
-          <Text>Release Year: {music.releaseYear}</Text>
-          <Button
-            title="Edit"
-            onPress={() => navigation.navigate('EditMusic', { id: music.id })}
-          />
-          <Button title="Delete" onPress={handleDelete} color="red" />
+          <Animatable.Text
+            style={styles.title}
+            animation="fadeInDown"
+            delay={200}
+            duration={600}
+          >
+            {music?.title || 'Unknown Title'}
+          </Animatable.Text>
+          <Text>Artist: {music?.artist || 'Unknown Artist'}</Text>
+          <Text>Genre: {music?.genre || 'Unknown Genre'}</Text>
+          <Text>Release Year: {music?.releaseYear || 'N/A'}</Text>
+          <View style={styles.buttons}>
+            <Animatable.View
+              animation="zoomIn"
+              delay={500}
+              duration={500}
+              style={styles.buttonWrapper}
+            >
+              <Button
+                title="Edit"
+                onPress={() => navigation.navigate('EditMusic', { id: music.id })}
+              />
+            </Animatable.View>
+
+            <Animatable.View
+              animation="zoomIn"
+              delay={700}
+              duration={500}
+              style={styles.buttonWrapper}
+            >
+              <Button title="Delete" onPress={handleDelete} color="red" />
+            </Animatable.View>
+          </View>
         </>
       ) : (
-        <Text style={styles.error}>No data found</Text>
+        <Text style={styles.error}>No data found for this music</Text>
       )}
-    </View>
+    </Animatable.View>
   );
 };
 
@@ -113,6 +143,10 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   error: { color: 'red', textAlign: 'center', marginBottom: 20 },
+  buttons: { marginTop: 20 },
+  buttonWrapper: {
+    marginVertical: 10,
+  },
 });
 
 export default DetailMusic;

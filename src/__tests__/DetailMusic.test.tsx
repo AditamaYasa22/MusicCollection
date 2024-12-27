@@ -1,14 +1,14 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import DetailMusic from '../screens/DetailMusic';
-import { getMusicById, deleteMusic } from '../services/api';
+import { getMusicById, deleteMusic } from '../api/api';
 import { NavigationContainer } from '@react-navigation/native';
 import { Alert } from 'react-native';
 
 jest.spyOn(Alert, 'alert');
 
 // Mock fungsi API
-jest.mock('../services/api', () => ({
+jest.mock('../api/api', () => ({
   getMusicById: jest.fn(),
   deleteMusic: jest.fn(),
 }));
